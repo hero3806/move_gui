@@ -1,5 +1,6 @@
 package hero.move_gui;
 
+import hero.move_gui.config.HudConfig;
 import hero.move_gui.gui.HudEditorScreen;
 import hero.move_gui.keybinds.Keybind;
 import net.fabricmc.api.ClientModInitializer;
@@ -10,6 +11,8 @@ public class Move_guiClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 
+		HudConfig.load();
+		
 		Keybind.register();
 		
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {

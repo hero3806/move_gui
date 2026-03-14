@@ -1,5 +1,6 @@
 package hero.move_gui.gui;
 
+import hero.move_gui.config.HudConfig;
 import hero.move_gui.config.HudManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -188,6 +189,8 @@ public class HudEditorScreen extends Screen {
             draggingHearts = false;
             draggingHunger = false;
             draggingXP = false;
+
+            HudConfig.save();
         }
 
         return super.mouseReleased(click);
