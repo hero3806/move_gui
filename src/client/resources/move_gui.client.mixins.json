@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "hero.move_gui.mixin.client",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"InGameHudMixin",
+
+		"ExperienceBarMixins/Main"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
