@@ -46,6 +46,8 @@ public class HudEditorScreen extends Screen {
                         HudManager.hungerY = 0;
                         HudManager.xpbarX = 0;
                         HudManager.xpbarY = 0;
+
+                        HudConfig.save();
                     }
             ).dimensions(
                     this.width - buttonWidth - 10,
@@ -73,6 +75,8 @@ public class HudEditorScreen extends Screen {
 
                         HudManager.xpbarX = -baseX;
                         HudManager.xpbarY = 0;
+
+                        HudConfig.save();
                     }
             ).dimensions(
                     this.width - buttonWidth - 10,
@@ -100,6 +104,8 @@ public class HudEditorScreen extends Screen {
 
                         HudManager.xpbarX = baseX;
                         HudManager.xpbarY = 0;
+
+                        HudConfig.save();
                     }
             ).dimensions(
                     this.width - buttonWidth - 10,
