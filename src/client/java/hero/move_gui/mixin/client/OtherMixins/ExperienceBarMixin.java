@@ -1,4 +1,4 @@
-package hero.move_gui.mixin.client.ExperienceBarMixins;
+package hero.move_gui.mixin.client.OtherMixins;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -8,7 +8,7 @@ import hero.move_gui.config.HudManager;
 import net.minecraft.client.gui.hud.bar.ExperienceBar;
 
 @Mixin(ExperienceBar.class)
-public class Main {
+public class ExperienceBarMixin {
 
     @ModifyVariable(
         method = "renderBar",

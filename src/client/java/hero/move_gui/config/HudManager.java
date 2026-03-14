@@ -13,4 +13,11 @@ public class HudManager {
 
     public static int xpbarX = 0;
     public static int xpbarY = 0;
+
+    public static int armorX = 0;
+    public static int armorY = 0;
+
+    public static int chatX = 0;
+    public static int chatY = 0;
+    public static boolean chatRightAligned = false;
 }

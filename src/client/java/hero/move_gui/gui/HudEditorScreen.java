@@ -7,6 +7,7 @@ import net.minecraft.text.Text;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.util.math.MathHelper;
 
 public class HudEditorScreen extends Screen {
 
@@ -14,6 +15,8 @@ public class HudEditorScreen extends Screen {
     private boolean draggingHearts;
     private boolean draggingHunger;
     private boolean draggingXP;
+    private boolean draggingArmor;
+    private boolean draggingChat;
 
     private double offsetX, offsetY;
 
@@ -46,6 +49,11 @@ public class HudEditorScreen extends Screen {
                         HudManager.hungerY = 0;
                         HudManager.xpbarX = 0;
                         HudManager.xpbarY = 0;
+                        HudManager.armorX = 0;
+                        HudManager.armorY = 0;
+                        HudManager.chatX = 0;
+                        HudManager.chatY = 0;
+                        HudManager.chatRightAligned = false;
 
                         HudConfig.save();
                     }
@@ -76,6 +84,13 @@ public class HudEditorScreen extends Screen {
                         HudManager.xpbarX = -baseX;
                         HudManager.xpbarY = 0;
 
+                        HudManager.armorX = -baseX;
+                        HudManager.armorY = 0;
+
+                        HudManager.chatX = 0;
+                        HudManager.chatY = -23;
+                        HudManager.chatRightAligned = false;
+
                         HudConfig.save();
                     }
             ).dimensions(
@@ -105,6 +120,18 @@ public class HudEditorScreen extends Screen {
                         HudManager.xpbarX = baseX;
                         HudManager.xpbarY = 0;
 
+                        HudManager.armorX = baseX;
+                        HudManager.armorY = 0;
+
+                        double chatScale = client.options.getChatScale().getValue();
+                        int chatWidth = MathHelper.floor(client.options.getChatWidth().getValue() * 280.0 + 40.0);
+                        chatWidth = (int)(chatWidth * chatScale);
+
+                        // Render uses (2 + chatX), so offset must account for that
+                        HudManager.chatX = this.width - chatWidth - 4;
+                        HudManager.chatY = -23;
+                        HudManager.chatRightAligned = true;
+
                         HudConfig.save();
                     }
             ).dimensions(
@@ -112,6 +139,27 @@ public class HudEditorScreen extends Screen {
                     this.height / 2 + 2*(buttonHeight + buttonDifference),
                     buttonWidth,
                     buttonHeight
+            ).build()
+        );
+
+        this.addDrawableChild(
+            ButtonWidget.builder(
+                Text.literal("Chat Align: " + (HudManager.chatRightAligned ? "Right" : "Left")),
+                button -> {
+
+                    HudManager.chatRightAligned = !HudManager.chatRightAligned;
+
+                    button.setMessage(
+                        Text.literal("Chat Align: " + (HudManager.chatRightAligned ? "Right" : "Left"))
+                    );
+
+                    HudConfig.save();
+                }
+            ).dimensions(
+                this.width - buttonWidth - 10,
+                this.height / 2 + 3 * (buttonHeight + buttonDifference),
+                buttonWidth,
+                buttonHeight
             ).build()
         );
     }
@@ -151,6 +199,24 @@ public class HudEditorScreen extends Screen {
                 offsetY = mouseY - (this.height - 22 - xpHeight - 2 + HudManager.xpbarY);
                 return true;
             }
+
+            if (insideArmor(mouseX, mouseY)) {
+                draggingArmor = true;
+                offsetX = mouseX - (this.width / 2 - 91 + HudManager.armorX);
+                offsetY = mouseY - (this.height - 22 - 28 + HudManager.armorY);
+                return true;
+            }
+
+            if (insideChat(mouseX, mouseY)) {
+                draggingChat = true;
+                double chatScale = client.options.getChatScale().getValue();
+                int chatHeight = MathHelper.floor(client.options.getChatHeightFocused().getValue() * 160.0 + 20.0);
+                chatHeight = (int)(chatHeight * chatScale);
+
+                offsetX = mouseX - (2 + HudManager.chatX);
+                offsetY = mouseY - (this.height - 40 - chatHeight + HudManager.chatY);
+                return true;
+            }
         }
 
         return super.mouseClicked(click, dblClick);
@@ -185,6 +251,21 @@ public class HudEditorScreen extends Screen {
             return true;
         }
 
+        if (draggingArmor) {
+            HudManager.armorX = (int)(mouseX - offsetX - (this.width / 2 - 91));
+            HudManager.armorY = (int)(mouseY - offsetY - (this.height - 22 - 28));
+            return true;
+        }
+
+        if (draggingChat) {
+            double chatScale = client.options.getChatScale().getValue();
+            int chatHeight = MathHelper.floor(client.options.getChatHeightFocused().getValue() * 160.0 + 20.0);
+            chatHeight = (int)(chatHeight * chatScale);
+            HudManager.chatX = (int)(mouseX - offsetX - 2);
+            HudManager.chatY = (int)(mouseY - offsetY - (this.height - 40 - chatHeight));
+            return true;
+        }
+
         return super.mouseDragged(click, deltaX, deltaY);
     }
 
@@ -195,7 +276,9 @@ public class HudEditorScreen extends Screen {
             draggingHearts = false;
             draggingHunger = false;
             draggingXP = false;
-
+            draggingArmor = false;
+            draggingChat = false;
+            
             HudConfig.save();
         }
 
@@ -225,6 +308,9 @@ public class HudEditorScreen extends Screen {
 
         HudManager.xpbarX += deltaX;
         HudManager.xpbarY += deltaY;
+
+        HudManager.armorX += deltaX;
+        HudManager.armorY += deltaY;
         super.resize(width, height);
     }
 
@@ -271,6 +357,24 @@ public class HudEditorScreen extends Screen {
         int xpbarX = baseX + HudManager.xpbarX;
         int xpbarY = baseY - 5 - 2 + HudManager.xpbarY;
         context.fill(xpbarX, xpbarY, xpbarX + 182, xpbarY + 5, 0x5500FF00);
+
+        // Armor preview box
+        int armorX = baseX + HudManager.armorX;
+        int armorY = baseY - 28 + HudManager.armorY;
+        context.fill(armorX, armorY, armorX + 81, armorY + 9, 0x559999FF);
+
+        // Chat preview box
+        double chatScale = client.options.getChatScale().getValue();
+
+        int chatWidth = MathHelper.floor(client.options.getChatWidth().getValue() * 280.0 + 40.0);
+        int chatHeight = MathHelper.floor(client.options.getChatHeightFocused().getValue() * 160.0 + 20.0);
+
+        chatWidth = (int)(chatWidth * chatScale);
+        chatHeight = (int)(chatHeight * chatScale);
+
+        int chatX = 2 + HudManager.chatX;
+        int chatY = this.height - 40 - chatHeight + HudManager.chatY;
+        context.fill(chatX, chatY, chatX + chatWidth, chatY + chatHeight, 0x5533AAFF);
     }
 
     /* 
@@ -317,5 +421,33 @@ public class HudEditorScreen extends Screen {
         int y = baseY - xpHeight - 2 + HudManager.xpbarY;
 
         return mouseX >= x && mouseX <= x + xpWidth && mouseY >= y && mouseY <= y + xpHeight;
+    }
+
+    private boolean insideArmor(double mouseX, double mouseY) {
+        int baseX = this.width / 2 - 91;
+        int baseY = this.height - 22;
+
+        int x = baseX + HudManager.armorX;
+        int y = baseY - 28 + HudManager.armorY;
+
+        return mouseX >= x && mouseX <= x + 81 && mouseY >= y && mouseY <= y + 9;
+    }
+
+    private boolean insideChat(double mouseX, double mouseY) {
+        //MinecraftClient client = MinecraftClient.getInstance();
+
+        double scale = client.options.getChatScale().getValue();
+
+        int chatWidth = MathHelper.floor(client.options.getChatWidth().getValue() * 280.0 + 40.0);
+        int chatHeight = MathHelper.floor(client.options.getChatHeightFocused().getValue() * 160.0 + 20.0);
+
+        chatWidth = (int)(chatWidth * scale);
+        chatHeight = (int)(chatHeight * scale);
+
+        int x = 2 + HudManager.chatX;
+        int y = this.height - 40 - chatHeight + HudManager.chatY;
+
+        return mouseX >= x && mouseX <= x + chatWidth &&
+            mouseY >= y && mouseY <= y + chatHeight;
     }
 }

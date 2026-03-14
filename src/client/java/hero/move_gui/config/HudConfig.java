@@ -33,6 +33,13 @@ public class HudConfig {
             data.xpbarX = HudManager.xpbarX;
             data.xpbarY = HudManager.xpbarY;
 
+            data.armorX = HudManager.armorX;
+            data.armorY = HudManager.armorY;
+
+            data.chatX = HudManager.chatX;
+            data.chatY = HudManager.chatY;
+            data.chatRightAligned = HudManager.chatRightAligned;
+
             FileWriter writer = new FileWriter(FILE);
             GSON.toJson(data, writer);
             writer.close();
@@ -65,6 +72,13 @@ public class HudConfig {
 
             HudManager.xpbarX = data.xpbarX;
             HudManager.xpbarY = data.xpbarY;
+
+            HudManager.armorX = data.armorX;
+            HudManager.armorY = data.armorY;
+
+            HudManager.chatX = data.chatX;
+            HudManager.chatY = data.chatY;
+            HudManager.chatRightAligned = data.chatRightAligned;
 
         } catch (Exception e) {
             e.printStackTrace();

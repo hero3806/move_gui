@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import hero.move_gui.config.HudManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
 
@@ -20,6 +21,8 @@ public class InGameHudMixin {
     @Shadow
     private MinecraftClient client;
 
+    @Shadow
+    private ChatHud chatHud;
 
     // Moves the hotbar according to the invbox
     @ModifyArgs(
@@ -98,6 +101,68 @@ public class InGameHudMixin {
         args.set(3, y);
     }
 
+
+    @ModifyArgs(
+        method = "renderStatusBars",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/hud/InGameHud;renderArmor(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/player/PlayerEntity;III I)V"
+        ),
+        require = 0
+    )
+    private void moveArmor(Args args) {
+
+        int y = args.get(2);
+        int x = args.get(5);
+
+        y += HudManager.armorY;
+        x += HudManager.armorX;
+
+        args.set(2, y);
+        args.set(5, x);
+    }
+    
+    @ModifyArgs(
+        method = "renderMountHealth",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/DrawContext;drawGuiTexture"
+        ),
+        require = 0
+    )
+    private void moveMountHealth(Args args) {
+
+        int x = args.get(2);
+        int y = args.get(3);
+
+        x += HudManager.hungerX;
+        y += HudManager.hungerY;
+
+        args.set(2, x);
+        args.set(3, y);
+    }
+
+    @ModifyArgs(
+        method = "renderHeldItemTooltip",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithBackground"
+        )
+    )
+    private void moveHeldItemTooltip(Args args) {
+
+        int x = args.get(2);
+        int y = args.get(3);
+
+        // Move together with the hotbar
+        x += HudManager.hotbarX;
+        y += HudManager.hotbarY;
+
+        args.set(2, x);
+        args.set(3, y);
+    }
+
+    // EXP Bar Level
     @Inject(
         method = "renderMainHud",
         at = @At(
@@ -122,4 +187,37 @@ public class InGameHudMixin {
         context.getMatrices().popMatrix();
     }
 
+
+    // Move Chat Hud
+    @Inject(
+        method = "renderChat",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/hud/ChatHud;render(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/font/TextRenderer;IIIZZ)V"
+        )
+    )
+    private void moveChatStart(
+        DrawContext context,
+        RenderTickCounter tickCounter,
+        CallbackInfo ci
+    ) {
+        context.getMatrices().pushMatrix();
+        context.getMatrices().translate(HudManager.chatX, HudManager.chatY);
+    }
+
+    @Inject(
+        method = "renderChat",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/gui/hud/ChatHud;render(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/font/TextRenderer;IIIZZ)V",
+            shift = At.Shift.AFTER
+        )
+    )
+    private void moveChatEnd(
+        DrawContext context,
+        RenderTickCounter tickCounter,
+        CallbackInfo ci
+    ) {
+        context.getMatrices().popMatrix();
+    }
 }

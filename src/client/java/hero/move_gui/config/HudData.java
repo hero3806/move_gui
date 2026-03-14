@@ -13,4 +13,11 @@ public class HudData {
 
     public int xpbarX;
     public int xpbarY;
+
+    public int armorX;
+    public int armorY;
+
+    public int chatX;
+    public int chatY;
+    public boolean chatRightAligned;
 }

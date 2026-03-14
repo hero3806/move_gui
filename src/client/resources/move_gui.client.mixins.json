@@ -4,8 +4,8 @@
 	"compatibilityLevel": "JAVA_21",
 	"client": [
 		"InGameHudMixin",
-
-		"ExperienceBarMixins/Main"
+		"OtherMixins/ExperienceBarMixin",
+		"OtherMixins/ChatHudMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
