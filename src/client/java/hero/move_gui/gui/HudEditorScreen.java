@@ -434,7 +434,6 @@ public class HudEditorScreen extends Screen {
     }
 
     private boolean insideChat(double mouseX, double mouseY) {
-        //MinecraftClient client = MinecraftClient.getInstance();
 
         double scale = client.options.getChatScale().getValue();
 

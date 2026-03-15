@@ -6,10 +6,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import hero.move_gui.config.HudManager;
 import net.minecraft.client.gui.hud.bar.JumpBar;
-
 @Mixin(JumpBar.class)
 public class JumpBarMixin {
-    
+
     @ModifyVariable(
         method = "renderBar",
         at = @At("STORE"),

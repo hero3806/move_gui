@@ -5,7 +5,9 @@
 	"client": [
 		"InGameHudMixin",
 		"OtherMixins/ExperienceBarMixin",
-		"OtherMixins/ChatHudMixin"
+		"OtherMixins/ChatHudMixin",
+		"OtherMixins/JumpBarMixin",
+		"OtherMixins/LocatorBarMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
