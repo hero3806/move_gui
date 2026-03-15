@@ -10,7 +10,7 @@
 # HUD/GUI Customizer
 ![HUD/GUI Customizer](https://i.ibb.co/Cp8VFyCY/Untitled-67.png)
 
-Ever wanted to move your HUD? Well, now you can do that with this mod! (more options coming soon!)
+Ever wanted to customize your HUD? Well, now you can do that with this mod! (more options coming soon!)
 (NOTE: This mod is currently in ALPHA!)
 
 ## Features
