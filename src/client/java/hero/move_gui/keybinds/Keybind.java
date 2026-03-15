@@ -9,7 +9,7 @@ import net.minecraft.client.util.InputUtil;
 
 public class Keybind {
     public static KeyBinding OPEN_HUD_EDITOR;
-
+        
     public static void register() {
         OPEN_HUD_EDITOR = KeyBindingHelper.registerKeyBinding(
             new KeyBinding(
